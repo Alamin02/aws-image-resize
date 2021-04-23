@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "name": "image-aws",
+  "version": "1.0.0",
+  "description": "Aws based image resizing project",
+  "main": "index.js",
+  "author": "Md. Al Amin",
+  "license": "MIT",
+  "scripts": {
+    "start": "yarn workspace frontend start"
+  }
+}
