@@ -11,25 +11,32 @@ const uploadMiddleware = require("../middlewares/uploadImage");
 
 router.get("/:userId", (req, res) => {
   const { userId } = req.params;
-  const images = getImagesByUserId(userId);
 
-  res.json({ data: images });
+  try {
+    const images = getImagesByUserId(userId);
+    res.json({ data: images });
+  } catch (e) {
+    res.status(500).json({ error: "Could not fetch data" });
+  }
 });
 
 router.post("/", uploadMiddleware.array("images"), (req, res) => {
   const { userId } = req.body;
 
-  for (const file of req.files) {
-    insertImage({
-      userId,
-      imageKey: file.key,
-      processedUrl: null,
-      mainUrl: file.location,
-      size: file.size,
-    });
+  try {
+    for (const file of req.files) {
+      insertImage({
+        userId,
+        imageKey: file.key,
+        processedUrl: null,
+        mainUrl: file.location,
+        size: file.size,
+      });
+    }
+    res.json({ msg: "Images added to queue" });
+  } catch (e) {
+    res.status(500).json({ error: "Could not save image" });
   }
-
-  res.json({ msg: "Images added to queue" });
 });
 
 module.exports = router;
