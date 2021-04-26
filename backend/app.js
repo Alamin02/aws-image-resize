@@ -6,7 +6,9 @@ const logger = require("morgan");
 const cors = require("cors");
 
 // require env variables
-require("dotenv").config();
+require("dotenv").config({
+  path: path.join(process.cwd(), ".env"),
+});
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
