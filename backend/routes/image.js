@@ -1,14 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const { addToQueue } = require("../services/queue");
-
 const {
   insertImage,
   getImagesByUserId,
   updateImage,
-} = require("../services/image");
-
+} = require("../services/database");
+const { addToQueue } = require("../services/queue");
 const uploadMiddleware = require("../middlewares/uploadImage");
 
 router.get("/:userId", (req, res) => {
@@ -33,6 +31,7 @@ router.post("/", uploadMiddleware.array("images"), async (req, res) => {
         userId,
         imageKey: file.key,
         processedUrl: null,
+        resolution,
         mainUrl: file.location,
         size: file.size,
       });
@@ -49,7 +48,7 @@ router.post("/", uploadMiddleware.array("images"), async (req, res) => {
       );
     }
 
-    await Promise.all(addToQueuePromises).then(console.log);
+    await Promise.all(addToQueuePromises);
     res.json({ msg: "Images added to queue" });
   } catch (e) {
     console.error(e);

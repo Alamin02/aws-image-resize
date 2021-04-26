@@ -8,6 +8,7 @@ const createTableIfNotExist = db.prepare(
       userId VARCHAR(30),
       imageKey VARCHAR(30) UNIQUE,
       status VARCHAR(10),
+      resolution VARCHAR(20),
       processedUrl VARCHAR,
       mainUrl VARCHAR,
       size INT
@@ -19,6 +20,7 @@ createTableIfNotExist.run();
 const insertImage = ({
   userId,
   imageKey,
+  resolution,
   status = "queued",
   processedUrl,
   mainUrl,
@@ -27,15 +29,17 @@ const insertImage = ({
   const insertStatement = db.prepare(`INSERT INTO images (
         userId,
         imageKey,
+        resolution,
         status,
         processedUrl,
         mainUrl,
         size
-    ) VALUES (?, ?, ?, ?, ?, ?)`);
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)`);
 
   return insertStatement.run(
     userId,
     imageKey,
+    resolution,
     status,
     processedUrl,
     mainUrl,
