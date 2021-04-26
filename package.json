@@ -12,8 +12,8 @@
   "author": "Md. Al Amin",
   "license": "MIT",
   "scripts": {
-    "start": "yarn workspace frontend start",
-    "server": "dotenv -e .env yarn workspace backend start",
+    "start": "yarn workspace frontend build",
+    "server": "yarn workspace frontend deploy & dotenv -e .env yarn workspace backend start",
     "worker": "dotenv -e .env yarn workspace worker start"
   }
 }

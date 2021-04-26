@@ -12,6 +12,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
+    "serve": "^11.3.2",
     "shortid": "^2.2.16",
     "web-vitals": "^1.0.1"
   },
@@ -19,7 +20,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "react-scripts build && yarn serve -s build"
   },
   "eslintConfig": {
     "extends": [
