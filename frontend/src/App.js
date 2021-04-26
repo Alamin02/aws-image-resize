@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   // Form input data
   const [userId, setUserId] = useState(localStorage.getItem("USER_ID"));
-  const [resolution, setResolution] = useState("resolution-1");
+  const [resolution, setResolution] = useState("640×480");
   const [images, setImages] = useState([]);
 
   // Fetched data from server

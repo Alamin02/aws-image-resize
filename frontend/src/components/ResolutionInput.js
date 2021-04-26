@@ -5,6 +5,8 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 
 export default function RadioButtonsGroup({ value, onChange }) {
+  const resolutions = ["640×480", "1280×800", "1024×576"];
+
   return (
     <FormControl component="fieldset">
       <FormLabel component="legend">Resolution</FormLabel>
@@ -14,21 +16,14 @@ export default function RadioButtonsGroup({ value, onChange }) {
         value={value}
         onChange={onChange}
       >
-        <FormControlLabel
-          value="resolution-1"
-          control={<Radio />}
-          label="640×480"
-        />
-        <FormControlLabel
-          value="resolution-2"
-          control={<Radio />}
-          label="1280×800"
-        />
-        <FormControlLabel
-          value="resolution-3"
-          control={<Radio />}
-          label="1024×576"
-        />
+        {resolutions.map((resolution) => (
+          <FormControlLabel
+            key={resolution}
+            value={resolution}
+            control={<Radio />}
+            label={resolution}
+          />
+        ))}
       </RadioGroup>
     </FormControl>
   );

@@ -51,12 +51,12 @@ const getImagesByUserId = (userId) => {
   return findImageByUserIdStatement.all(userId);
 };
 
-const updateImage = (id, status, processedUrl) => {
+const updateImage = (imageKey, status, processedUrl) => {
   const updateImageStatement = db.prepare(`
-      UPDATE images SET status = ?, processedUrl = ? WHERE id = ?
+      UPDATE images SET status = ?, processedUrl = ? WHERE imageKey = ?
     `);
 
-  return updateImageStatement.run(status, processedUrl, id);
+  return updateImageStatement.run(status, processedUrl, imageKey);
 };
 
 module.exports = {

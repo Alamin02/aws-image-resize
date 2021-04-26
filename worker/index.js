@@ -1,13 +1,7 @@
 import Jimp from "jimp";
-import path from "path";
+import fetch from "node-fetch";
 
 const AWS = require("aws-sdk");
-
-console.log(path.join(process.cwd(), ".env"))
-
-require("dotenv").config({
-  path: path.join(process.cwd(), ".env"),
-});
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -17,48 +11,93 @@ AWS.config.update({
 
 const sqs = new AWS.SQS({ apiVersion: "2012-11-05" });
 
-const queueURL = "https://sqs.us-east-1.amazonaws.com/799513362811/im-homework";
+const S3 = new AWS.S3();
 
-var params = {
+const queueURL = process.env.SQS_IMAGE_QUEUE_URL;
+
+const queueParams = {
   AttributeNames: ["SentTimestamp"],
   MaxNumberOfMessages: 1,
   MessageAttributeNames: ["All"],
   QueueUrl: queueURL,
   VisibilityTimeout: 20,
-  WaitTimeSeconds: 0,
+  WaitTimeSeconds: 20,
 };
 
-// const samplePath = path.join(__dirname, "sample", "sample.jpg");
-
-async function processImage(width, height) {
-  const image = await Jimp.read(samplePath)
-    .then((image) => {
-      return image.resize(width, height).getBufferAsync(image.getMIME());
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-
-  console.log(image);
-
-  return image;
+async function processImage(image, width, height) {
+  return Jimp.read(image).then((image) => {
+    return image.resize(width, height).getBufferAsync(image.getMIME());
+  });
 }
 
-// process(320, 200);
+async function updateStatus(imageKey, status, processedUrl = null) {
+  await fetch("http://localhost:4000/api/v1/images/", {
+    method: "put",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      processedUrl,
+      imageKey,
+      status,
+    }),
+  });
+}
 
 async function runner() {
   while (true) {
     try {
-      const data = await sqs.receiveMessage(params).promise();
-      console.log(data);
+      // Get data from SQS
+      const data = await sqs.receiveMessage(queueParams).promise();
 
       if (data.Messages) {
+        // Get the first message - as there will be one message only
+        // As MaxNumberOfMessages is set to 1
+        const message = data.Messages[0];
+        const messageAttributes = message.MessageAttributes;
+        const originalImageKey = messageAttributes.imageKey.StringValue;
+
+        // Get original image object from S3
+        const originalImageObject = await S3.getObject({
+          Bucket: "im-homework",
+          Key: originalImageKey,
+        }).promise();
+
+        const width = parseInt(messageAttributes.width.StringValue, 10);
+        const height = parseInt(messageAttributes.height.StringValue, 10);
+
+        try {
+          // Resize image
+          const processedImage = await processImage(
+            originalImageObject.Body,
+            width,
+            height
+          );
+
+          // Upload resized image to s3 bucket
+          const uploadedObject = await S3.upload({
+            Bucket: "im-homework",
+            Key: `resized-${messageAttributes.imageKey.StringValue}`,
+            ContentType: originalImageObject.ContentType,
+            Tagging: "public=yes",
+            Body: processedImage,
+          }).promise();
+
+          await updateStatus(
+            originalImageKey,
+            "processed",
+            uploadedObject.Location
+          );
+        } catch (e) {
+          console.error(e);
+          await updateStatus(originalImageKey, "failed");
+        }
+
+        // Delete message from queue
         const deleteParams = {
           QueueUrl: queueURL,
           ReceiptHandle: data.Messages[0].ReceiptHandle,
         };
-
-        // TODO: Add image processing here
 
         await sqs.deleteMessage(deleteParams).promise();
       }
