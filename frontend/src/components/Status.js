@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -15,8 +16,6 @@ const useStyles = makeStyles({
 
 function Status({ status }) {
   const classes = useStyles();
-
-  console.log(status);
 
   const columns = [
     { name: "Key", field: "imageKey" },
@@ -52,6 +51,10 @@ function Status({ status }) {
       </Table>
     </TableContainer>
   );
+}
+
+Status.propTypes = {
+  status: PropTypes.arrayOf(PropTypes.object)
 }
 
 export default Status;

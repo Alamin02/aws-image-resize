@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -28,3 +29,8 @@ export default function RadioButtonsGroup({ value, onChange }) {
     </FormControl>
   );
 }
+
+RadioButtonsGroup.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+};

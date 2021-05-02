@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Button } from "@material-ui/core";
 
 import ImageIcon from "@material-ui/icons/Image";
@@ -24,5 +25,9 @@ function FileInput({ onChange }) {
     </Button>
   );
 }
+
+FileInput.propTypes = {
+  onChange: PropTypes.func.isRequired,
+};
 
 export default FileInput;

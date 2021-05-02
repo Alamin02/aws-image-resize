@@ -85,7 +85,7 @@ function App() {
     setErrorAlert(false);
   };
 
-  const uploadFiles = () => {
+  const uploadFiles = async () => {
     if (images.length === 0) {
       showError("Select at least one image");
       return;

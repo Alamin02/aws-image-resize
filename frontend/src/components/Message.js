@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Snackbar } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 
@@ -14,5 +15,12 @@ function Message({ open, handleClose, message, severity }) {
     </Snackbar>
   );
 }
+
+Message.propTypes = {
+  open: PropTypes.bool,
+  handleClose: PropTypes.func,
+  message: PropTypes.string,
+  severity: PropTypes.string,
+};
 
 export default Message;
